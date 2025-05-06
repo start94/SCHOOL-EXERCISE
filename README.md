@@ -1,68 +1,101 @@
-# 🧠 Malignant Breast Tumor Detection
+# 🧠 PROFESSION AI SCHOOL EXERCISE  
+## Malignant Breast Tumor Detection
 
-This repository contains a machine learning project developed as part of the "Profession AI School" exercise. The objective is to build a classification model capable of identifying **malignant breast tumors** with **high accuracy, high AUC, and perfect recall on the test set.
+This project aims to build a binary classification model capable of detecting **malignant breast tumors** from diagnostic features extracted from cell nuclei. The model must meet the following evaluation criteria:
 
- 🎯 Objective
+- ✅ **Accuracy ≥ 0.98** on the test set  
+- ✅ **AUC ≥ 0.98** on the test set  
+- ✅ **Recall = 1.0** (zero false negatives)
 
-The model must meet the following performance criteria on the test dataset:
-- Accuracy ≥ 0.98  
-- AUC ≥ 0.98  
-- Recall = 1.0 (i.e., no false negatives)
+---
 
- 📂 Dataset
+## 📂 Dataset
 
-The dataset used is the **Wisconsin Breast Cancer Dataset**, provided by ProfessionAI:
+The dataset is provided by [ProfessionAI](https://github.com/ProfAI/machine-learning-fondamenti) and contains 569 samples with 30 numeric features, derived from digitized images of fine needle aspirate (FNA) of breast masses.
 
-- 📥 Source: [breast_cancer.csv](https://raw.githubusercontent.com/ProfAI/machine-learning-fondamenti/main/datasets/breast_cancer.csv)
-- Each instance represents features extracted from a breast mass, and the target is whether it is **malignant (M)** or **benign (B)**.
+- Each row represents a tumor sample
+- The `diagnosis` column contains:
+  - `M` = Malignant
+  - `B` = Benign
 
-⚙️ Workflow and Techniques
+---
 
-1. **Data Cleaning & Preprocessing**
-- **Dropped the `ID number`** column as it carries no predictive power.
-- Converted categorical labels (`M`, `B`) to binary integers (`1`, `0`) using mapping for compatibility with ML algorithms.
-- Features and labels were separated into `X` and `y`.
+## 🔧 Steps Performed
 
- 2. **Data Splitting**
-- The dataset was split into **training** and **test** sets with a 70/30 ratio using `train_test_split`.
+### 1. **Data Cleaning**
+- Removed non-informative column `ID number`
+- Converted the `diagnosis` column into binary values:
+  - `1` = Malignant
+  - `0` = Benign
 
- 3. **Feature Scaling**
-- Applied **StandardScaler** to normalize feature values. This is essential for algorithms like Logistic Regression to converge properly and improve performance.
+### 2. **Data Exploration**
+- Verified class distribution:
+  - ~37% malignant, ~63% benign
+- Used `value_counts()` and percentage checks
 
-4. **Model Training**
-- Chose **Logistic Regression** with `class_weight='balanced'` to handle potential class imbalance.
-  - 📌 Reason: Logistic Regression is simple, interpretable, and performs well on linearly separable data. Balanced weighting ensures equal importance to both classes.
+### 3. **Train/Test Split**
+- Divided data into 70% training and 30% test set using `train_test_split()`
 
- 5. **Threshold Tuning**
-- Adjusted the **classification threshold** (e.g., to 0.25) to **maximize recall**, ensuring **no malignant cases are missed**.
-  - 📌 Why? In medical applications, especially cancer detection, false negatives (missing a malignant case) are unacceptable.
+### 4. **Feature Scaling**
+- Applied **StandardScaler** to normalize all features to zero mean and unit variance — important for logistic regression convergence
 
- 6. **Evaluation Metrics**
-- Evaluated the model using:
-  - **Accuracy**
-  - **AUC (Area Under ROC Curve)**
-  - **Recall**, **Precision**
-  - **Confusion Matrix** (with custom heatmap function)
+### 5. **Model Selection**
+- Trained a **Logistic Regression** model with `class_weight="balanced"` to counter class imbalance
+- Logistic regression was chosen for its interpretability and efficiency on small-to-medium datasets
 
-7. **Prediction on New Data**
-- Loaded an external dataset (`breast_cancer_pred.csv`) and generated predictions with probabilities.
-- Saved results as an Excel file: `breast_cancer_prediction.xlsx`.
+### 6. **Performance Evaluation**
+- Evaluated model using:
+  - `classification_report()`
+  - Custom **confusion matrix plot** with precision and recall annotation
+- Metrics evaluated at **custom threshold = 0.25** to maximize **recall**
 
-## 📊 Results
+### 7. **ROC and AUC**
+- Computed **AUC = 0.9988** using `roc_auc_score()`
+- Plotted **ROC curve** using `RocCurveDisplay.from_estimator()`
 
-On the test dataset:
-- ✅ **Accuracy** ≥ 0.98  
-- ✅ **AUC** ≥ 0.98  
-- ✅ **Recall** = 1.0  
-- The model successfully avoids false negatives while maintaining strong performance on all metrics.
+### 8. **Threshold Tuning**
+- Predictions adjusted using a threshold of **0.25** instead of the default 0.5
+  - Goal: ensure **no false negatives** (recall = 1)
+  - Slight trade-off in precision accepted
 
-## 📁 Output
+### 9. **Deployment on Unseen Data**
+- Loaded an external test set (`breast_cancer_pred.csv`)
+- Applied the same scaler and model
+- Used threshold = **0.30** for real-world inference
+- Saved predictions and probabilities to an Excel file:  
+  `breast_cancer_prediction.xlsx`
 
-- `breast_cancer_prediction.xlsx` – Excel file containing:
-  - Patient ID
-  - Prediction (0 = Benign, 1 = Malignant)
-  - Confidence Probability
+---
 
-## 💡 Conclusion
+## ✅ Results
 
-This project demonstrates how a carefully tuned and evaluated **Logistic Regression** model, enhanced by threshold adjustment and data scaling, can effectively detect malignant tumors with high confidence. The approach prioritizes **recall** to align with the critical nature of medical diagnostics.
+| Metric        | Value (Test Set) |
+|---------------|------------------|
+| Accuracy      | ≥ 0.98 ✅         |
+| Recall        | 1.00 ✅           |
+| AUC           | 0.9988 ✅         |
+
+---
+
+## 📦 Output File
+
+- `breast_cancer_prediction.xlsx`  
+  Contains:
+  - `ID number`
+  - `prediction` (0 = Benign, 1 = Malignant)
+  - `probability` (confidence score)
+
+---
+
+## 📌 Requirements
+
+This project uses:
+- Python 3.x
+- pandas, numpy
+- matplotlib, seaborn
+- scikit-learn
+
+To install all requirements:
+
+```bash
+pip install -r requirements.txt
